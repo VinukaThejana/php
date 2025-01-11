@@ -1,0 +1,51 @@
+services:
+  web:
+    container_name: nginx
+    image: nginx:1.27.3-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    links:
+      - php-fpm
+
+  php-fpm:
+    container_name: php-fpm
+    build: docker/php-fpm
+    volumes:
+      - ./app:/var/www/html
+
+  db:
+    container_name: db
+    image: postgres:latest
+    ports:
+      - "6500:5432"
+    volumes:
+      - postgresDB:/data/postgres
+    env_file:
+      - ./app/.env
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisDB:/data/redis
+
+  # mongo:
+  #   container_name: mongo
+  #   image: mongo:latest
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongoDB:/data/db
+
+volumes:
+  postgresDB:
+  redisDB:
+  # mongoDB:
